@@ -6,6 +6,7 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Shell, Manager
+from flask_migrate import Migrate, MigrateCommand
 import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -13,11 +14,14 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQALCHEMY_COMMIT_ON_TEARDOWN'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SECRET_KEY'] = 'hard to guess string'
 bootstrap = Bootstrap(app)
 manager = Manager(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+manager.add_command('db', MigrateCommand)
 
 
 class Role(db.Model):
